@@ -1,38 +1,27 @@
 /*
- * Versao adaptada ao padrao visual do SENAI - tela de SUBPROCESSO
- * (equivalente ao subProcesso.js original do SENAI), do processo "Programa
- * Competitividade - Solicitacao de Vaga em Turma Exclusiva (EAD)".
- * Existe uma versao irma para a tela de PROCESSO em
- * layout_padrao_senai_processo_cloud.js (equivalente ao processoPai.js
- * original) - o conteudo das duas e igual hoje, mas ficam em arquivos
- * separados porque cada tela usa seu proprio campo de JS customizado no
- * Zeev, podendo divergir no futuro.
+ * Versao adaptada ao padrao visual do SENAI - tela de SUBPROCESSO, do
+ * processo "Programa Competitividade - Solicitacao de Vaga em Turma
+ * Exclusiva (EAD)".
  *
- * Base identica ao layout_padrao_cloud.js (grid de ate 4 colunas, label
- * acima do campo, reorganizacao das colunas da tabela mult, destaque de
- * campo obrigatorio vazio). A UNICA diferenca funcional e a injecao do
- * Bootstrap 5 antes da primeira folha de estilo, replicando o que
- * processoPai.js/subProcesso.js do SENAI ja faziam - o resto do visual
- * SENAI (fontes, esconder botoes Inserir/Excluir, fundo das secoes) fica
- * todo no layout_padrao_senai_subprocesso_cloud.css.
- *
- * IMPORTANTE: este script NAO move nem remove nenhum <tr>/<td> do HTML
- * original - so adiciona classes. Isso e proposital: o Zeev tem uma
- * automacao que esconde/mostra campos aplicando style="display:none" na
- * <tr> original (ex.: <tr codgroup="2763" class="execute-required">). Se a
- * gente mover esses elementos para outra <tr>, a automacao passa a
- * esconder/mostrar um elemento que nao esta mais na tela, e o campo nunca
- * some/aparece visualmente. Mantendo a <tr> original intacta e so trocando
- * o "display" dela via CSS (flex), a automacao do Zeev continua
- * funcionando normalmente e o layout se reorganiza sozinho quando um campo
- * aparece ou desaparece.
+ * IMPORTANTE - estrutura DIFERENTE das demais telas: esta tela usa o modo
+ * "nativo" do Zeev com Bootstrap 5 (<fieldset class="row g-3"> com
+ * <legend> + campos em <div class="form-floating col-*">), nao a
+ * <table class="form"><tr class="group"> das outras telas. Por isso este
+ * script e bem mais simples que layout_padrao_cloud.js: o Bootstrap ja
+ * organiza os campos em flex-row nativamente, e o CSS
+ * (layout_padrao_senai_subprocesso_cloud.css) resolve o visual (barra
+ * azul, label acima do campo, 4 colunas) so com "order"/flex, sem precisar
+ * mover nenhum elemento no DOM. Este script cuida so de: (1) injetar o
+ * Bootstrap 5, igual ao subProcesso.js original do SENAI, e (2) destacar
+ * campos obrigatorios vazios quando o Zeev acusa erro de validacao.
  *
  * Como usar: cole este conteudo no campo de "JavaScript" customizado da
- * TELA DE SUBPROCESSO na plataforma (Zeev). NAO afeta layout_padrao_cloud.js.
+ * TELA DE SUBPROCESSO na plataforma (Zeev).
  */
 (function () {
     // Injeta o Bootstrap 5 antes da primeira folha de estilo da pagina -
-    // igual ao que processoPai.js/subProcesso.js do SENAI ja faziam.
+    // igual ao que subProcesso.js do SENAI ja fazia (e o que habilita essa
+    // tela a usar o grid/form-floating nativo do Bootstrap).
     function injetarBootstrap5() {
         var primeiroLink = document.querySelector('link[rel="stylesheet"]');
         if (!primeiroLink || document.getElementById('bootstrap5-senai')) {
@@ -45,175 +34,11 @@
         primeiroLink.parentNode.insertBefore(link, primeiroLink);
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', injetarBootstrap5);
-    } else {
-        injetarBootstrap5();
-    }
-
-    var SELETOR_TABELAS = 'table[data-groupid]:not([mult])';
-    var SELETOR_TABELAS_MULT = 'table[mult]';
-
-    function estilizarTabelaSimples(tabela) {
-        if (tabela.getAttribute('data-estilizado-simples') === 'true') {
-            return false;
-        }
-        tabela.setAttribute('data-estilizado-simples', 'true');
-        tabela.classList.add('tabela-campos-em-linha');
-        return true;
-    }
-
-    function estilizarTodasAsTabelasSimples() {
-        var tabelas = document.querySelectorAll(SELETOR_TABELAS);
-        var alguma = false;
-        for (var i = 0; i < tabelas.length; i++) {
-            if (estilizarTabelaSimples(tabelas[i])) {
-                alguma = true;
-            }
-        }
-        return alguma;
-    }
-
-    function estilizarTabela(tabela) {
-        if (tabela.getAttribute('data-estilizado') === 'true') {
-            return false;
-        }
-        tabela.setAttribute('data-estilizado', 'true');
-        tabela.classList.add('tabela-mult-em-card');
-
-        var wrapper = tabela.closest('.table-responsive');
-        if (wrapper) {
-            wrapper.classList.add('tabela-mult-card-wrapper');
-        }
-
-        organizarColunasMult(tabela);
-
-        return true;
-    }
-
-    /*
-     * Nas tabelas mult, o label de cada campo fica numa celula separada, na
-     * <tr class="header"> compartilhada por todos os registros (nao junto
-     * do campo, como nas tabelas simples). Para conseguir o mesmo visual de
-     * "label acima do campo, ate 4 por linha", copiamos o texto de cada
-     * label do cabecalho para dentro da celula de dado correspondente (via
-     * column-name) e escondemos so as celulas de label do cabecalho -
-     * mantendo visivel a primeira celula dele, que tem o botao Inserir
-     * (o CSS SENAI depois esconde esse botao visualmente, mas o marcamos
-     * do mesmo jeito para manter a mesma logica do layout padrao).
-     */
-    function celulaDeControle(linha) {
-        var primeira = linha.firstElementChild;
-        // A celula de controle (Inserir/Excluir) nunca tem "column-name" -
-        // se a primeira celula da linha tiver esse atributo, e porque o
-        // Zeev nao renderizou controle nenhum nesse estado da tabela (ex.:
-        // quando todos os campos estao visiveis, em tabelas mult limitadas
-        // a 1 registro). Retornar null evita tratar um campo de verdade
-        // como se fosse o botao.
-        if (!primeira || primeira.hasAttribute('column-name')) {
-            return null;
-        }
-        return primeira;
-    }
-
-    function aplicarLabelsNasLinhasDeDados(tbody, linhaCabecalho, mapaDeLabels) {
-        var linhas = Array.prototype.slice.call(tbody.querySelectorAll('tr'));
-
-        linhas.forEach(function (linha) {
-            if (linha === linhaCabecalho || linha.getAttribute('data-labels-aplicados') === 'true') {
-                return;
-            }
-            linha.setAttribute('data-labels-aplicados', 'true');
-
-            var controle = celulaDeControle(linha);
-            var indice = 0;
-            var MAX_POR_LINHA = 4;
-
-            Array.prototype.forEach.call(linha.children, function (celula) {
-                var nomeDaColuna = celula.getAttribute('column-name');
-                if (!nomeDaColuna || !mapaDeLabels[nomeDaColuna]) {
-                    return;
-                }
-
-                // Campo marcado pelo Zeev como nao editavel/nao visivel para
-                // esta tarefa (class="hide", input vira type="hidden") - fica
-                // fora da contagem para nao deixar buraco no grid quando os
-                // campos visiveis se reorganizam.
-                if (celula.classList.contains('hide')) {
-                    return;
-                }
-
-                var rotulo = document.createElement('div');
-                rotulo.className = 'mult-label-campo';
-                rotulo.textContent = mapaDeLabels[nomeDaColuna];
-                celula.insertBefore(rotulo, celula.firstChild);
-
-                var linhaGrid = Math.floor(indice / MAX_POR_LINHA) + 1;
-                var colunaGrid = (indice % MAX_POR_LINHA) + 1;
-                celula.style.gridRow = String(linhaGrid);
-                celula.style.gridColumn = String(colunaGrid);
-                indice++;
-            });
-
-            if (controle) {
-                controle.classList.add('celula-controle-mult');
-            }
-        });
-    }
-
-    function organizarColunasMult(tabela) {
-        var tbody = tabela.querySelector('tbody');
-        if (!tbody) {
-            return false;
-        }
-
-        var linhaCabecalho = tbody.querySelector('tr.header');
-        if (!linhaCabecalho) {
-            return false;
-        }
-
-        var mapaDeLabels = {};
-        Array.prototype.forEach.call(linhaCabecalho.children, function (celula) {
-            var nomeDaColuna = celula.getAttribute('column-name');
-            if (nomeDaColuna) {
-                mapaDeLabels[nomeDaColuna] = celula.textContent.trim();
-                celula.classList.add('celula-label-mult-oculta');
-            }
-        });
-
-        var controleCabecalho = celulaDeControle(linhaCabecalho);
-        if (controleCabecalho) {
-            controleCabecalho.classList.add('celula-controle-mult');
-        }
-
-        aplicarLabelsNasLinhasDeDados(tbody, linhaCabecalho, mapaDeLabels);
-
-        // Quando o usuario clica em "Inserir", o Zeev acrescenta uma nova
-        // <tr> de dados no tbody - este observer aplica os labels nela tambem.
-        var observerLinhas = new MutationObserver(function () {
-            aplicarLabelsNasLinhasDeDados(tbody, linhaCabecalho, mapaDeLabels);
-        });
-        observerLinhas.observe(tbody, { childList: true });
-
-        return true;
-    }
-
-    function estilizarTodasAsTabelasMult() {
-        var tabelas = document.querySelectorAll(SELETOR_TABELAS_MULT);
-        var alguma = false;
-        for (var i = 0; i < tabelas.length; i++) {
-            if (estilizarTabela(tabelas[i])) {
-                alguma = true;
-            }
-        }
-        return alguma;
-    }
-
     /*
      * Destaca os campos obrigatorios vazios e rola a tela ate o primeiro
      * deles quando o Zeev mostra o modal de erro de validacao (colorbox com
      * <h2>Atencao!</h2>) ao tentar enviar/salvar com campos obrigatorios
-     * nao preenchidos.
+     * nao preenchidos. Logica identica a layout_padrao_cloud.js.
      */
     var CLASSE_CAMPO_VAZIO = 'campo-obrigatorio-vazio';
     var CLASSE_GRUPO_VAZIO = 'grupo-obrigatorio-vazio';
@@ -268,7 +93,6 @@
     function marcarCampoVazio(campo) {
         campo.classList.add(CLASSE_CAMPO_VAZIO);
 
-        // So amarra o listener de "limpar ao preencher" uma unica vez por campo.
         if (!campo.dataset.listenerObrigatorioAmarrado) {
             campo.dataset.listenerObrigatorioAmarrado = 'true';
             var evento = campo.tagName === 'SELECT' ? 'change' : 'input';
@@ -281,11 +105,10 @@
     }
 
     // Checkbox/radio de um mesmo grupo (mesmo name) representam UM campo so:
-    // em vez de marcar cada quadradinho/bolinha, destaca o container que
-    // agrupa todos eles (o td.col1), e basta um item ficar marcado para o
-    // destaque do grupo inteiro sumir.
+    // em vez de marcar cada quadradinho/bolinha, destaca o container
+    // (.form-floating) que agrupa todos eles.
     function marcarGrupoVazio(itensDoGrupo) {
-        var container = itensDoGrupo[0].closest('td.col1') || itensDoGrupo[0].parentElement;
+        var container = itensDoGrupo[0].closest('.form-floating') || itensDoGrupo[0].parentElement;
         if (!container) {
             return;
         }
@@ -348,7 +171,7 @@
 
                 if (!algumMarcado) {
                     marcarGrupoVazio(itensDoGrupo);
-                    var containerDoGrupo = itensDoGrupo[0].closest('td.col1') || itensDoGrupo[0];
+                    var containerDoGrupo = itensDoGrupo[0].closest('.form-floating') || itensDoGrupo[0];
                     vazios.push(containerDoGrupo);
                 }
                 return;
@@ -380,12 +203,9 @@
     }
 
     function iniciar() {
-        estilizarTodasAsTabelasSimples();
-        estilizarTodasAsTabelasMult();
+        injetarBootstrap5();
 
         var observer = new MutationObserver(function () {
-            estilizarTodasAsTabelasSimples();
-            estilizarTodasAsTabelasMult();
             processarModalDeErroObrigatorio();
         });
         observer.observe(document.body, { childList: true, subtree: true });

@@ -1,26 +1,26 @@
 /*
- * Versao adaptada ao padrao visual do SENAI - tela de SUBPROCESSO
- * (equivalente ao subProcesso.css original do SENAI), do processo "Programa
- * Competitividade - Solicitacao de Vaga em Turma Exclusiva (EAD)".
- * Existe uma versao irma para a tela de PROCESSO em
- * layout_padrao_senai_processo_cloud.css (equivalente ao processoPai.css
- * original) - o conteudo das duas e igual hoje, mas ficam em arquivos
- * separados porque cada tela usa seu proprio campo de CSS customizado no
- * Zeev, podendo divergir no futuro.
+ * Versao adaptada ao padrao visual do SENAI - tela de SUBPROCESSO, do
+ * processo "Programa Competitividade - Solicitacao de Vaga em Turma
+ * Exclusiva (EAD)".
  *
- * Base identica ao layout_padrao_cloud.css (cards, cabecalho colorido,
- * grid de ate 4 colunas com label acima do campo) + a identidade visual
- * que ja existia nos arquivos de referencia do SENAI (processoPai.css e
- * subProcesso.css, que sao praticamente identicos): fontes Google Fonts
- * (Oswald / Unbounded / Work Sans), fundo branco das secoes do formulario,
- * e os botoes Inserir/Excluir das tabelas mult ficam escondidos (o SENAI
- * ja escondia isso no CSS original deles).
+ * IMPORTANTE - estrutura DIFERENTE das demais telas: esta tela usa o modo
+ * "nativo" do Zeev com Bootstrap 5 (<main id="process-form"> >
+ * <section class="rounded-3 shadow p-3"> > <fieldset class="row g-3"> com
+ * <legend> + campos em <div class="form-floating col-*"><input><label></div>),
+ * em vez da <table class="form"><tr class="group"> usada nas outras telas
+ * do processo (por isso NAO reaproveitamos layout_padrao_cloud.css aqui -
+ * a estrutura e outra e precisa de selegores proprios).
  *
- * Usada junto com layout_padrao_senai_subprocesso_cloud.js, que adiciona a
- * classe "tabela-campos-em-linha" em toda tabela elegivel (e injeta o
- * Bootstrap 5, igual ao processoPai.js/subProcesso.js do SENAI).
+ * O resultado visual e o MESMO das demais telas: cada <section> vira um
+ * card branco com sombra/borda, cada <legend> vira a barra azul com o
+ * titulo do grupo, e cada campo (<div class="form-floating">) vira uma
+ * "coluna" com o label em negrito ACIMA do input (sobrescrevendo o label
+ * flutuante padrao do Bootstrap), agrupados em blocos de ate 4 por linha -
+ * ignorando as classes de coluna responsivas originais (col-lg-4, col-md-6
+ * etc.), que foram definidas pelo Zeev/SENAI para outro layout.
  *
- * NAO mexe em layout_padrao_cloud.css - e um arquivo totalmente separado.
+ * Usada junto com layout_padrao_senai_subprocesso_cloud.js.
+ * NAO mexe em layout_padrao_cloud.css nem em layout_padrao_senai_processo_cloud.css.
  */
 
 /* Fontes do SENAI: Oswald (labels/legendas), Unbounded (titulos),
@@ -41,6 +41,146 @@ div.container-task {
     margin-left: 1.4rem;
 }
 
+/* Remove o fundo branco do painel que fica entre o fundo cinza da pagina
+   e os cards (inclui a area do menu lateral tambem). */
+.box {
+    background-color: inherit !important;
+}
+
+#BoxFrmExecute,
+#BoxFrmExecute.box-body,
+#ContainerForm,
+#process-form {
+    background-color: transparent !important;
+    padding: 0 !important;
+}
+
+/* Cada <section> vira o card branco (sobrescrevendo o bg-b/shadow/rounded-3
+   padrao do Bootstrap que ja vinha na tela). */
+#process-form section {
+    background-color: #ffffff !important;
+    border: 1px solid #d9dee4 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
+    margin: 0 0 28px 0 !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+/* O <fieldset class="row g-3"> ja e um flex-row (row do Bootstrap) - so
+   ajustamos o espacamento interno pra bater com o padrao das outras telas. */
+#process-form section fieldset.row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    margin: 0 !important;
+    row-gap: 16px !important;
+    column-gap: 32px !important;
+    padding: 16px 24px !important;
+}
+
+/* Barra azul com o titulo do grupo (ex.: "Dados da Empresa:"), "vazando"
+   para fora do padding do fieldset ate encostar nas 4 bordas do card. */
+#process-form section fieldset.row > legend {
+    display: block !important;
+    width: calc(100% + 48px) !important;
+    max-width: calc(100% + 48px) !important;
+    flex: 0 0 auto !important;
+    background: #2962ff !important;
+    color: #ffffff !important;
+    font-family: "Unbounded", "Oswald", sans-serif !important;
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px;
+    margin: -16px -24px 0 -24px !important;
+    padding: 12px 24px !important;
+}
+
+/* Texto de ajuda logo abaixo da legenda (ex.: "Caso nao seja possivel
+   matricular..."), quando existir - ocupa a linha inteira. */
+#process-form section fieldset.row > p {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    font-family: "Work Sans", sans-serif;
+    font-size: 13px;
+    color: #555;
+}
+
+/* Cada campo (<div class="form-floating col-*">) vira uma "coluna" de ate
+   4 por linha - ignora as classes col-xxl-*/col-lg-*/col-md-* originais,
+   que foram pensadas para outro layout responsivo. */
+#process-form section fieldset.row > .form-floating {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+    flex: 0 0 calc(25% - 24px) !important;
+    max-width: calc(25% - 24px) !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
+
+/* Desliga o "label flutuante" padrao do Bootstrap (que fica sobreposto ao
+   campo) e usa o label como bloco normal, em negrito, ACIMA do input -
+   mesmo padrao visual das outras telas. "order" reposiciona o label antes
+   do input mesmo ele vindo depois no HTML. */
+#process-form section fieldset.row > .form-floating > label {
+    position: static !important;
+    transform: none !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    order: -1 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    font-family: "Oswald", sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    color: #37474f !important;
+    white-space: normal;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+#process-form section fieldset.row > .form-floating > .form-control,
+#process-form section fieldset.row > .form-floating > select {
+    order: 1 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
+    padding: 8px 12px !important;
+    font-family: "Work Sans", sans-serif !important;
+    font-size: 14px !important;
+    text-align: left !important;
+}
+
+/* Em telas menores, volta a empilhar tudo em uma unica coluna */
+@media (max-width: 900px) {
+    #process-form section fieldset.row > .form-floating {
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
+
+/*
+ * Caso essa tela venha a ter tabelas mult (nao encontramos nenhuma no HTML
+ * analisado, mas fica pronto): o SENAI ja escondia os botoes
+ * Inserir/Excluir no CSS original deles.
+ */
+td:has(#btnInsertNewRow),
+td:has(#btnDeletewRow) {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+.dadosCandidatos {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
 legend {
     font-family: "Oswald", sans-serif;
     font-weight: 600;
@@ -50,348 +190,10 @@ input {
     font-family: "Work Sans", sans-serif;
 }
 
-/* Fundo das secoes/containers do formulario - mesmo comportamento do
-   processoPai.css/subProcesso.css do SENAI. */
-#ContainerForm {
-    padding: 0 0 0 0;
-    background-color: transparent;
-}
-
-#process-form {
-    background-color: transparent;
-}
-
-#process-form section {
-    background-color: #FFFFFF;
-}
-
-.dadosCandidatos {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100%;
-}
-
-/* Remove o fundo branco do painel que fica entre o fundo cinza da pagina
-   e os cards das tabelas (inclui a area do menu lateral tambem), deixando
-   o cinza da pagina aparecer por tras. */
-.box {
-    background-color: inherit !important;
-}
-
-#BoxFrmExecute,
-#BoxFrmExecute.box-body {
-    background: transparent !important;
-}
-
-table.tabela-campos-em-linha {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
-    border: 1px solid #d9dee4 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
-    margin: 0 0 28px 0 !important;
-    padding: 0 !important;
-    border-collapse: separate !important;
-    overflow: hidden;
-}
-
-/* Barra de cabecalho com o titulo do grupo (ex.: "Identificacao do projeto") */
-table.tabela-campos-em-linha tr.group td.group {
-    display: block !important;
-    background: #2962ff !important;
-    color: #ffffff !important;
-    font-family: "Unbounded", "Oswald", sans-serif !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    padding: 12px 24px !important;
-    letter-spacing: 0.3px;
-}
-
 /*
- * Layout "4 por linha" via Flexbox aplicado direto nas <tr> ORIGINAIS
- * (nao criamos nem movemos nenhum elemento). Isso e essencial para a
- * automacao de mostrar/esconder campos do Zeev continuar funcionando: ela
- * aplica style="display:none" na propria <tr>, e o Flexbox reflui os
- * campos vizinhos sozinho quando isso acontece - sem precisar de JS extra.
- */
-table.tabela-campos-em-linha tbody {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: stretch !important;
-    row-gap: 16px !important;
-    column-gap: 32px !important;
-    padding: 16px 24px !important;
-}
-
-/* A linha de titulo do grupo ocupa a linha inteira sozinha e "vaza" para
-   fora do padding horizontal/superior do tbody, encostando nas 4 bordas
-   do card (a largura extra e somada via "width", em vez de depender so de
-   margens negativas simetricas, para evitar qualquer imprecisao). */
-table.tabela-campos-em-linha tbody tr.group {
-    display: block !important;
-    flex: 0 0 auto !important;
-    box-sizing: content-box !important;
-    width: calc(100% + 48px) !important;
-    margin-top: -16px !important;
-    margin-bottom: 0 !important;
-    margin-left: -24px !important;
-    margin-right: -24px !important;
-}
-
-table.tabela-campos-em-linha tbody tr.group td.group {
-    box-sizing: border-box !important;
-    width: 100% !important;
-}
-
-/* Cada <tr> de campo (label + campo) vira uma "coluna" flexivel: no maximo
-   4 por linha (100% / 4, descontando os 3 espacos de 32px entre elas).
-   IMPORTANTE: o "display" aqui e proposital SEM !important. A automacao do
-   Zeev esconde/mostra a <tr> aplicando um style="display:none" comum
-   (sem !important) - e um !important nosso derrotaria esse style inline e
-   deixaria o campo sempre visivel, quebrando a automacao. */
-table.tabela-campos-em-linha tbody tr:not(.group) {
-    display: flex;
-    flex-direction: column !important;
-    gap: 4px !important;
-    flex: 0 0 calc(25% - 24px) !important;
-    max-width: calc(25% - 24px) !important;
-    box-sizing: border-box !important;
-}
-
-table.tabela-campos-em-linha tbody tr:not(.group) td.col0,
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 {
-    display: block !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    text-align: left !important;
-}
-
-table.tabela-campos-em-linha tbody tr:not(.group) td.col0 {
-    white-space: normal;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    font-family: "Oswald", sans-serif;
-    font-weight: bold;
-    color: #37474f;
-}
-
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input,
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select,
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 textarea {
-    text-align: left !important;
-    font-family: "Work Sans", sans-serif !important;
-}
-
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 .form-control,
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select,
-table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input {
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-/* Em telas menores, volta a empilhar tudo em uma unica coluna */
-@media (max-width: 900px) {
-    table.tabela-campos-em-linha tbody tr:not(.group) {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-/*
- * Tabelas "mult" - mesmo visual de card das demais tabelas, sem alterar a
- * ordem/estrutura dos campos.
- */
-.tabela-mult-card-wrapper {
-    width: 95% !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
-    border: 1px solid #d9dee4 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
-    margin: 0 0 28px 0 !important;
-    padding: 0 !important;
-    overflow: hidden;
-}
-
-/* Estilo padrao: usado quando a tabela mult NAO tem um .table-responsive
-   como pai (a regra abaixo, mais especifica, sobrescreve quando tem). */
-table.tabela-mult-em-card {
-    width: 95% !important;
-    box-sizing: border-box !important;
-    background: #ffffff !important;
-    border: 1px solid #d9dee4 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12) !important;
-    margin: 0 0 28px 0 !important;
-}
-
-/* Quando ha wrapper .table-responsive, o card fica no wrapper e a tabela
-   interna perde a propria borda/sombra para nao duplicar visual. */
-.tabela-mult-card-wrapper table.tabela-mult-em-card {
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0 !important;
-    margin: 0 !important;
-    width: 100% !important;
-}
-
-table.tabela-mult-em-card caption {
-    caption-side: top !important;
-    text-align: left !important;
-    background: #2962ff !important;
-    color: #ffffff !important;
-    font-family: "Unbounded", "Oswald", sans-serif !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    padding: 12px 24px !important;
-    letter-spacing: 0.3px;
-    margin: 0 !important;
-}
-
-table.tabela-mult-em-card td,
-table.tabela-mult-em-card th {
-    padding: 10px 16px !important;
-}
-
-/*
- * Reorganiza as colunas de cada registro da tabela mult em blocos de ate 4,
- * com o label (copiado do cabecalho pelo layout_padrao_senai_subprocesso_cloud.js)
- * acima do campo - mesmo efeito visual das tabelas simples.
- */
-
-/* Esconde so as celulas de LABEL do cabecalho compartilhado (o texto foi
-   copiado para dentro de cada celula de dado). */
-table.tabela-mult-em-card thead td.celula-label-mult-oculta,
-table.tabela-mult-em-card tbody tr.header td.celula-label-mult-oculta {
-    display: none !important;
-}
-
-/* O tbody vira flex (empilhando os registros verticalmente) para que cada
-   <tr> vire um flex-item com largura definida - se a <tr> virasse flex
-   diretamente dentro de um tbody ainda em modo tabela, o navegador nao
-   consegue calcular a largura dela e o conteudo nao quebra linha nunca. */
-table.tabela-mult-em-card tbody {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-}
-
-table.tabela-mult-em-card tbody tr.header {
-    display: block !important;
-    flex: 0 0 100% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: #fff !important;
-    position: relative !important;
-    min-height: 24px !important;
-    padding: 0 !important;
-}
-
-/* Cada linha de dados (registro) vira um grid de 4 colunas para os campos. */
-table.tabela-mult-em-card tbody tr:not(.header) {
-    display: grid !important;
-    flex: 0 0 100% !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    align-items: start !important;
-    column-gap: 24px !important;
-    row-gap: 12px !important;
-    padding: 12px 16px !important;
-    border-top: 1px solid #eef1f4;
-    position: relative !important;
-}
-
-/*
- * O SENAI ja escondia os botoes Inserir/Excluir no CSS original deles
- * (td:has(#btnInsertNewRow) / td:has(#btnDeletewRow)) - reproduzimos isso
- * aqui via classe (mais robusto que :has(), que nem todo navegador suporta)
- * e tambem cobrimos o seletor original deles, caso alguma celula nao passe
- * pelo nosso JS de marcacao.
- */
-table.tabela-mult-em-card tbody tr.header > td.celula-controle-mult,
-table.tabela-mult-em-card tbody tr:not(.header) > td.celula-controle-mult,
-td:has(#btnInsertNewRow),
-td:has(#btnDeletewRow) {
-    display: none !important;
-    visibility: hidden !important;
-}
-
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] {
-    display: block !important;
-    box-sizing: border-box !important;
-    text-align: left !important;
-    /* a "caixa" visivel ao redor de cada campo era a borda da propria
-       celula, herdada do "table-bordered" do Bootstrap - nao do input. */
-    border: none !important;
-    background: transparent !important;
-}
-
-/* Campo marcado pelo Zeev como nao editavel/nao visivel para esta tarefa
-   (class="hide") precisa continuar escondido - sem isso, o display:block
-   !important da regra acima anularia o "hide" do Zeev. */
-table.tabela-mult-em-card tbody tr:not(.header) > td.hide {
-    display: none !important;
-}
-
-table.tabela-mult-em-card .mult-label-campo {
-    display: block;
-    font-family: "Oswald", sans-serif !important;
-    font-weight: 700 !important;
-    font-size: 13px !important;
-    color: #37474f !important;
-    margin-bottom: 4px;
-    white-space: normal;
-    overflow-wrap: break-word;
-    word-break: break-word;
-}
-
-/* Fonte/tamanho/cor do VALOR padronizados entre todos os tipos de campo
-   (texto, data, select) e entre editavel/somente-leitura. Seletor de
-   DESCENDENTE (espaco, nao ">") porque a celula pode ter mais de um nivel
-   de aninhamento ate chegar no elemento com o valor. */
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name],
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] *:not(.mult-label-campo) {
-    font-family: "Work Sans", sans-serif !important;
-    font-size: 14px !important;
-    color: #1f2d3d !important;
-}
-
-/* Campo REALMENTE editavel (input/select/textarea) mantem a caixa normal
-   do Zeev (fundo cinza claro, borda, cantos arredondados) - isso e o que
-   avisa o usuario que da pra clicar e digitar ali. So ajustamos
-   largura/alinhamento, sem remover a aparencia de campo. */
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] .form-control,
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] input,
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] select,
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    text-align: left !important;
-}
-
-/* Campo SOMENTE LEITURA: o Zeev nem renderiza um input, so uma <div> com
-   o valor (ex.: <div xtype="TEXT">231</div>) - esse fica como texto puro,
-   sem caixa nenhuma, igual ao visual dos campos so-leitura fora da mult. */
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] *:not(.mult-label-campo):not(input):not(select):not(textarea) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
-}
-
-/* Em telas menores, volta a empilhar tudo em uma unica coluna */
-@media (max-width: 900px) {
-    table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] {
-        flex: 0 0 100% !important;
-        max-width: 100% !important;
-    }
-}
-
-/*
- * Destaque de campo obrigatorio vazio, aplicado pelo layout_padrao_senai_subprocesso_cloud.js
- * quando o Zeev acusa erro de validacao ao tentar enviar o formulario.
+ * Destaque de campo obrigatorio vazio, aplicado pelo
+ * layout_padrao_senai_subprocesso_cloud.js quando o Zeev acusa erro de
+ * validacao ao tentar enviar o formulario.
  */
 .campo-obrigatorio-vazio {
     border: 2px solid #e53935 !important;
@@ -399,9 +201,7 @@ table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] *:not(.mult-la
     box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.15) !important;
 }
 
-/* Destaque de GRUPO obrigatorio vazio (checkbox/radio com varias opcoes):
-   marca o container inteiro em vez de cada item individualmente. */
-td.col1.grupo-obrigatorio-vazio {
+.grupo-obrigatorio-vazio {
     border: 2px solid #e53935 !important;
     border-radius: 8px !important;
     background: rgba(229, 57, 53, 0.06) !important;
