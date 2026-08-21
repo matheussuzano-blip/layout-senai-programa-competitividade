@@ -95,8 +95,68 @@
         }
 
         organizarColunasMult(tabela);
+        adicionarBotaoEditarDados(tabela);
 
         return true;
+    }
+
+    /*
+     * Botao "Editar dados": os campos da tabela mult comecam somente-leitura
+     * e so ficam editaveis depois que o usuario clica no botao (que fica no
+     * cabecalho/caption da tabela). Reproduz o comportamento que existia no
+     * Zeev antigo do SENAI (la, um script proprio deles fazia
+     * $('#secao input').prop('readonly', true) + um botao "Editar dados"
+     * que alternava isso) - aqui recriamos o MESMO comportamento de forma
+     * generica, sem depender de nomes de campo especificos, entao funciona
+     * em qualquer tabela mult independente de quais campos ela tiver.
+     */
+    function alternarSomenteLeituraCampos(campos, somenteLeitura) {
+        campos.forEach(function (campo) {
+            if (campo.tagName === 'SELECT') {
+                campo.disabled = somenteLeitura;
+            } else {
+                campo.readOnly = somenteLeitura;
+            }
+        });
+    }
+
+    function adicionarBotaoEditarDados(tabela) {
+        if (tabela.getAttribute('data-editar-dados') === 'true') {
+            return;
+        }
+        tabela.setAttribute('data-editar-dados', 'true');
+
+        var caption = tabela.querySelector('caption');
+        var tbody = tabela.querySelector('tbody');
+        if (!caption || !tbody) {
+            return;
+        }
+
+        var pegarCampos = function () {
+            return Array.prototype.slice.call(tbody.querySelectorAll('input, select, textarea'));
+        };
+
+        var editando = false;
+        alternarSomenteLeituraCampos(pegarCampos(), true);
+
+        var botao = document.createElement('button');
+        botao.type = 'button';
+        botao.className = 'btn-editar-dados-mult';
+        botao.textContent = 'Editar dados';
+        botao.addEventListener('click', function () {
+            editando = !editando;
+            alternarSomenteLeituraCampos(pegarCampos(), !editando);
+            botao.textContent = editando ? 'Fechar edição' : 'Editar dados';
+        });
+
+        caption.appendChild(botao);
+
+        // Se novos campos aparecerem depois (ex.: um novo registro
+        // inserido), aplica o mesmo estado atual (editavel ou nao) neles.
+        var observerCampos = new MutationObserver(function () {
+            alternarSomenteLeituraCampos(pegarCampos(), !editando);
+        });
+        observerCampos.observe(tbody, { childList: true, subtree: true });
     }
 
     /*

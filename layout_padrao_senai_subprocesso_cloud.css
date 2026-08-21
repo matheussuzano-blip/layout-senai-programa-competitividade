@@ -271,15 +271,38 @@ table.tabela-mult-em-card {
    das tabelas simples (ver td.group acima). */
 table.tabela-mult-em-card caption {
     caption-side: top !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     text-align: left !important;
     background: transparent !important;
     color: #212529 !important;
     font-family: "Oswald", sans-serif !important;
     font-size: 16px !important;
     font-weight: 600 !important;
-    padding: 16px 24px 4px !important;
+    padding: 16px 24px 12px !important;
     letter-spacing: 0.2px;
     margin: 0 !important;
+}
+
+/* Botao "Editar dados", injetado pelo layout_padrao_senai_subprocesso_cloud.js
+   dentro do caption da tabela mult. */
+table.tabela-mult-em-card caption .btn-editar-dados-mult {
+    flex: 0 0 auto;
+    background: #5b4fe8 !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 8px 16px !important;
+    font-family: "Oswald", sans-serif !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.2px;
+    cursor: pointer;
+}
+
+table.tabela-mult-em-card caption .btn-editar-dados-mult:hover {
+    background: #4a3fd6 !important;
 }
 
 table.tabela-mult-em-card td,
@@ -317,7 +340,17 @@ table.tabela-mult-em-card tbody tr.header {
     box-sizing: border-box !important;
     background: #fff !important;
     position: relative !important;
-    min-height: 24px !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+    /* a linha de cabecalho fica so com celulas escondidas (o texto do
+       label ja foi copiado pra cada campo) - sem isso, a borda padrao do
+       Bootstrap (table-bordered) aparecia como uma linha fina dupla logo
+       abaixo do titulo, mesmo com a linha "vazia". */
+    border: none !important;
+}
+
+table.tabela-mult-em-card tbody tr.header td {
+    border: none !important;
     padding: 0 !important;
 }
 
