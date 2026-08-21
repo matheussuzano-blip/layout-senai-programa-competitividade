@@ -104,16 +104,20 @@ table.tabela-campos-em-linha {
     overflow: hidden;
 }
 
-/* Barra de cabecalho com o titulo do grupo (ex.: "Identificacao do projeto") */
+/* Titulo do grupo (ex.: "Dados da empresa") como texto simples em negrito,
+   SEM barra colorida - reproduz o visual do Zeev antigo do SENAI (onde o
+   titulo era so um <legend> em negrito, sem fundo), em vez do cabecalho
+   azul que usamos nas outras telas. Mudanca GLOBAL (vale pra qualquer
+   grupo), nao um ajuste pontual por campo. */
 table.tabela-campos-em-linha tr.group td.group {
     display: block !important;
-    background: #2962ff !important;
-    color: #ffffff !important;
-    font-family: "Unbounded", "Oswald", sans-serif !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    padding: 12px 24px !important;
-    letter-spacing: 0.3px;
+    background: transparent !important;
+    color: #212529 !important;
+    font-family: "Oswald", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 16px 24px 4px !important;
+    letter-spacing: 0.2px;
 }
 
 /*
@@ -132,19 +136,15 @@ table.tabela-campos-em-linha tbody {
     padding: 16px 24px !important;
 }
 
-/* A linha de titulo do grupo ocupa a linha inteira sozinha e "vaza" para
-   fora do padding horizontal/superior do tbody, encostando nas 4 bordas
-   do card (a largura extra e somada via "width", em vez de depender so de
-   margens negativas simetricas, para evitar qualquer imprecisao). */
+/* A linha de titulo do grupo ocupa a linha inteira sozinha. Diferente das
+   outras telas, aqui o titulo NAO tem fundo colorido (ver td.group acima),
+   entao nao precisa "vazar" ate as bordas do card - fica normal dentro do
+   padding do tbody, como qualquer outra linha. */
 table.tabela-campos-em-linha tbody tr.group {
     display: block !important;
-    flex: 0 0 auto !important;
-    box-sizing: content-box !important;
-    width: calc(100% + 48px) !important;
-    margin-top: -16px !important;
-    margin-bottom: 0 !important;
-    margin-left: -24px !important;
-    margin-right: -24px !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 table.tabela-campos-em-linha tbody tr.group td.group {
@@ -198,6 +198,26 @@ table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input {
     box-sizing: border-box !important;
 }
 
+/* Caixa cinza clara ao redor do VALOR (input, select, textarea ou o texto
+   de um campo somente-leitura) - reproduz o visual do Zeev antigo, onde
+   todo campo aparecia dentro de uma caixinha cinza (como um input
+   "readonly" padrao do Bootstrap), em vez da caixa com borda fina que
+   usamos nas outras telas. Mudanca GLOBAL: vale pra qualquer campo,
+   editavel ou nao, sem distincao caso a caso. */
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 .form-control,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 textarea,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 > div[xtype] {
+    display: block !important;
+    background-color: #e9ecef !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
+}
+
 /* Em telas menores, volta a empilhar tudo em uma unica coluna */
 @media (max-width: 900px) {
     table.tabela-campos-em-linha tbody tr:not(.group) {
@@ -244,16 +264,18 @@ table.tabela-mult-em-card {
     width: 100% !important;
 }
 
+/* Titulo simples em negrito, sem barra colorida - mesmo padrao do titulo
+   das tabelas simples (ver td.group acima). */
 table.tabela-mult-em-card caption {
     caption-side: top !important;
     text-align: left !important;
-    background: #2962ff !important;
-    color: #ffffff !important;
-    font-family: "Unbounded", "Oswald", sans-serif !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    padding: 12px 24px !important;
-    letter-spacing: 0.3px;
+    background: transparent !important;
+    color: #212529 !important;
+    font-family: "Oswald", sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    padding: 16px 24px 4px !important;
+    letter-spacing: 0.2px;
     margin: 0 !important;
 }
 
@@ -379,14 +401,22 @@ table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea {
     text-align: left !important;
 }
 
-/* Campo SOMENTE LEITURA: o Zeev nem renderiza um input, so uma <div> com
-   o valor (ex.: <div xtype="TEXT">231</div>) - esse fica como texto puro,
-   sem caixa nenhuma, igual ao visual dos campos so-leitura fora da mult. */
-table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] *:not(.mult-label-campo):not(input):not(select):not(textarea) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+/* Caixa cinza clara ao redor do VALOR (input, select, textarea ou o texto
+   de um campo somente-leitura, ex.: <div xtype="TEXT">231</div>) - mesmo
+   padrao "readonly" do Zeev antigo usado nas tabelas simples (ver acima).
+   Mudanca GLOBAL: vale pra qualquer campo da mult, editavel ou nao. */
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] .form-control,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] input,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] select,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] > div[xtype] {
+    display: block !important;
+    background-color: #e9ecef !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    min-height: 38px !important;
+    box-sizing: border-box !important;
 }
 
 /* Em telas menores, volta a empilhar tudo em uma unica coluna */
