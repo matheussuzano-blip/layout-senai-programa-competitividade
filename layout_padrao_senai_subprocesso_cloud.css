@@ -201,24 +201,39 @@ table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input {
     box-sizing: border-box !important;
 }
 
-/* Caixa cinza clara ao redor do VALOR (input, select, textarea ou o texto
-   de um campo somente-leitura) - reproduz o visual do Zeev antigo, onde
-   todo campo aparecia dentro de uma caixinha cinza (como um input
-   "readonly" padrao do Bootstrap), em vez da caixa com borda fina que
-   usamos nas outras telas. Mudanca GLOBAL: vale pra qualquer campo,
-   editavel ou nao, sem distincao caso a caso. */
+/* Caixa ao redor do VALOR (input, select, textarea ou o texto de um campo
+   somente-leitura) - reproduz o visual do Zeev antigo. Formato (borda
+   arredondada, padding) e IGUAL sempre; so a COR DE FUNDO muda conforme o
+   campo estar somente-leitura (cinza, como um input "readonly" padrao do
+   Bootstrap) ou editavel (branco). Mudanca GLOBAL: vale pra qualquer
+   campo, sem distincao caso a caso alem do estado editavel/somente-leitura. */
 table.tabela-campos-em-linha tbody tr:not(.group) td.col1 .form-control,
 table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input,
 table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select,
 table.tabela-campos-em-linha tbody tr:not(.group) td.col1 textarea,
 table.tabela-campos-em-linha tbody tr:not(.group) td.col1 > div[xtype] {
     display: block !important;
-    background-color: #e9ecef !important;
     border: 1px solid #e9ecef !important;
     border-radius: 6px !important;
     padding: 8px 12px !important;
     min-height: 38px !important;
     box-sizing: border-box !important;
+}
+
+/* Somente-leitura (readonly/disabled, ou o texto de um campo so-leitura
+   que nem tem input de verdade) = fundo cinza claro. */
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input:read-only,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 textarea:read-only,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select:disabled,
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 > div[xtype] {
+    background-color: #e9ecef !important;
+}
+
+/* Editavel = fundo branco. */
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 input:not(:read-only),
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 textarea:not(:read-only),
+table.tabela-campos-em-linha tbody tr:not(.group) td.col1 select:not(:disabled) {
+    background-color: #ffffff !important;
 }
 
 /* Em telas menores, volta a empilhar tudo em uma unica coluna */
@@ -437,22 +452,37 @@ table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea {
     text-align: left !important;
 }
 
-/* Caixa cinza clara ao redor do VALOR (input, select, textarea ou o texto
-   de um campo somente-leitura, ex.: <div xtype="TEXT">231</div>) - mesmo
-   padrao "readonly" do Zeev antigo usado nas tabelas simples (ver acima).
-   Mudanca GLOBAL: vale pra qualquer campo da mult, editavel ou nao. */
+/* Caixa ao redor do VALOR (input, select, textarea ou o texto de um campo
+   somente-leitura, ex.: <div xtype="TEXT">231</div>). Formato e sempre
+   igual; a COR DE FUNDO muda conforme somente-leitura (cinza) ou editavel
+   (branco, depois que o botao "Editar dados" e clicado). */
 table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] .form-control,
 table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] input,
 table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] select,
 table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea,
 table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] > div[xtype] {
     display: block !important;
-    background-color: #e9ecef !important;
     border: 1px solid #e9ecef !important;
     border-radius: 6px !important;
     padding: 8px 12px !important;
     min-height: 38px !important;
     box-sizing: border-box !important;
+}
+
+/* Somente-leitura (readonly/disabled, antes de clicar em "Editar dados",
+   ou o texto de um campo que nem tem input de verdade) = fundo cinza claro. */
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] input:read-only,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea:read-only,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] select:disabled,
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] > div[xtype] {
+    background-color: #e9ecef !important;
+}
+
+/* Editavel (depois de clicar em "Editar dados") = fundo branco. */
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] input:not(:read-only),
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] textarea:not(:read-only),
+table.tabela-mult-em-card tbody tr:not(.header) > td[column-name] select:not(:disabled) {
+    background-color: #ffffff !important;
 }
 
 /* Em telas menores, volta a empilhar tudo em uma unica coluna */
