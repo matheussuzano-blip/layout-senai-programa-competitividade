@@ -153,7 +153,10 @@ table.tabela-campos-em-linha tbody tr.group td.group {
 }
 
 /* Cada <tr> de campo (label + campo) vira uma "coluna" flexivel: no maximo
-   4 por linha (100% / 4, descontando os 3 espacos de 32px entre elas).
+   4 por linha (100% / 4, descontando os 3 espacos de 32px entre elas) -
+   4 e o padrao fixo definido pelo usuario, independente de quantas colunas
+   a tela cheia da referencia SENAI mostraria naturalmente (o layout deles
+   e responsivo por padrao do Bootstrap; o nosso fica fixo em 4).
    IMPORTANTE: o "display" aqui e proposital SEM !important. A automacao do
    Zeev esconde/mostra a <tr> aplicando um style="display:none" comum
    (sem !important) - e um !important nosso derrotaria esse style inline e
